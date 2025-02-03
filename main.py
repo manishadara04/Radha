@@ -87,14 +87,23 @@ def health_check():
 def run_health_check_server():
     app.run(host='0.0.0.0', port=8050)  
     
-# Start Health Check Server in a separate thread
-health_check_thread = threading.Thread(target=run_health_check_server)
-health_check_thread.daemon = True
-health_check_thread.start()
+import signal
 
-# Client
-plugins = dict(root="plugins")
+# Function to handle termination signals
+def signal_handler(sig, frame):
+    LOGGER.info("Received termination signal. Shutting down...")
+    asyncio.get_event_loop().stop()
+
+# Register signal handlers
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
+
 if __name__ == "__main__":
+    # Start the Flask server in a separate process
+    from multiprocessing import Process
+    flask_process = Process(target=run_health_check_server)
+    flask_process.start()
+
     if not os.path.isdir(Config.DOWNLOAD_LOCATION):
         os.makedirs(Config.DOWNLOAD_LOCATION)
     if not os.path.isdir(Config.SESSIONS):
@@ -107,21 +116,20 @@ if __name__ == "__main__":
         api_hash=Config.API_HASH,
         sleep_threshold=120,
         plugins=plugins,
-        workdir= f"{Config.SESSIONS}/",
-        workers= 2,
+        workdir=f"{Config.SESSIONS}/",
+        workers=2,
     )
 
     chat_id = []
     for i, j in zip(Config.GROUPS, Config.AUTH_USERS):
         chat_id.append(i)
         chat_id.append(j)
-    
-    
+
     async def main():
         await PRO.start()
         bot_info = await PRO.get_me()
         LOGGER.info(f"<--- @{bot_info.username} Started --->")
-        
+
         for i in chat_id:
             try:
                 await PRO.send_message(chat_id=i, text="**Bot Started! ♾**")
@@ -130,5 +138,11 @@ if __name__ == "__main__":
                 continue
         await idle()
 
-    asyncio.get_event_loop().run_until_complete(main())
-    LOGGER.info(f"<---Bot Stopped--->")
+    try:
+        asyncio.get_event_loop().run_until_complete(main())
+    except (KeyboardInterrupt, SystemExit):
+        LOGGER.info("Shutting down...")
+    finally:
+        flask_process.terminate()
+        flask_process.join()
+        LOGGER.info(f"<---Bot Stopped--->")
