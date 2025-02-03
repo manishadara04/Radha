@@ -1,0 +1,17 @@
+pyrogram
+tgcrypto
+requests
+pyromod
+aiohttp
+aiofiles
+asyncio
+humanize
+wget
+yt-dlp
+hachoir
+bs4
+httpx[http2]
+img2pdf
+tglogging
+flask
+gunicorn

@@ -1,0 +1,35 @@
+{
+   "name": "Yshdrm",
+   "description": "Telegram Bot",
+   "repository": "https://github.com/Mahadev0008/Yshdrm",
+   "logo": "https://telegra.ph/file/1f63de6e3ce65ef6b9f00.jpg",
+   "image": "heroku/python",
+   "env": {
+      "API_ID": {
+        "description": "Fill Api ID Take this value from My.telegram.org",
+        "value": "",
+        "required": true
+      },
+      "API_HASH": {
+        "description": "Fill Api hash Take this value from My.telegram.org",
+        "value": "",
+        "required": true
+      },
+      "BOT_TOKEN": {
+        "description": "Bot Token",
+        "value": "",
+        "required": true
+      },      
+      "SUDO": {
+            "description": "Sudo users id space by space",
+            "value": "",
+            "required": true  
+      }
+   },
+   "formation": {
+            "worker": {
+                "quantity": 1,
+                "size": "eco"
+            }
+        }
+  }
