@@ -85,7 +85,7 @@ def health_check():
     return jsonify(status='OK'), 200
 
 def run_health_check_server():
-    app.run(host='0.0.0.0', port=8080)  
+    app.run(host='0.0.0.0', port=8050)  
     
 # Start Health Check Server in a separate thread
 health_check_thread = threading.Thread(target=run_health_check_server)
