@@ -14,3 +14,4 @@ img2pdf
 tglogging
 flask==1.2.5
 gunicorn==20.1.0
+httpx[http2]
